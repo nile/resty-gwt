@@ -159,6 +159,12 @@
         <pluginManagement>
             <plugins>
                 <plugin>
+                  <artifactId>maven-release-plugin</artifactId>
+                  <configuration>
+                    <releaseProfiles>run-examples</releaseProfiles>
+                  </configuration>
+                </plugin>
+                <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>gwt-maven-plugin</artifactId>
                     <version>${gwt-version}</version>
