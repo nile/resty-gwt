@@ -18,6 +18,8 @@
 
 package org.fusesource.restygwt.client;
 
+import java.util.function.BiConsumer;
+
 /**
  *
  * @author <a href="http://hiramchirino.com">Hiram Chirino</a>
@@ -28,4 +30,35 @@ public interface MethodCallback<T> {
 
     void onSuccess(Method method, T response);
 
+    public static final class PartialMc<T> {
+        private final BiConsumer<Method,T> success;
+
+        private PartialMc(BiConsumer<Method, T> success) {
+            this.success = success;
+        }
+
+        public MethodCallback<T> withFailure(BiConsumer<Method, Throwable> failure) {
+            return new MethodCallback<T>(){
+                @Override
+                public void onSuccess(Method method, T response){
+                    success.accept(method, response);
+                }
+
+                @Override
+                public void onFailure(Method method, Throwable exception){
+                    failure.accept(method, exception);
+                }
+            };
+        }
+    }
+
+    /**a fluent builder to facilitate use with lambdas.  for example:
+       <pre>
+         MethodCallback.withSuccess((m,r) -> ...)
+                       .withFailure((m,e) -> ...);
+       </pre>
+    */
+    public static <T> PartialMc<T> withSuccess(BiConsumer<Method, T> success) {
+        return new PartialMc<>(success);
+    }
 }
